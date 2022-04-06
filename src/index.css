@@ -1,0 +1,13 @@
+:root{
+    --ui-color: rgb(245, 211, 118);
+}
+
+body{
+    margin: 0;
+    padding: 0;
+}
+
+#root{
+    display: grid;
+    grid-template-rows: 10vh 80vh 10vh;
+}
