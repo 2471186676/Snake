@@ -1,62 +1,44 @@
 import React, { useState, useEffect } from "react";
+import { createArray, fillArray, addToArray } from "./misc/2dArray";
+
+function random(max) {
+	return Math.floor(Math.random() * max);
+}
 
 function useBoard(size) {
-	const [board, setBoard] = useState(
-		Array.from(Array(size), () => new Array(size))
-	);
+	// create&fill game board
+	const [board, setBoard] = useState(createArray(size, size));
 
-	const change = (loc, elem) => {
-		let newBoard = board;
-		newBoard[loc[0]][loc[1]] = elem;
-		setBoard([...newBoard]);
-	};
+	const addFruit = () => {
+		// check no fruit on board
 
-	return { board, change, setBoard };
-}
+		// add new fruit at random location
+		let added = false;
+		while (!added) {
+			let x = random(size);
+			let y = random(size);
 
-
-const Board = (size) => {
-	let board = Array.from(Array(size), () => new Array(size));
-	for (let x = 0; x < board.length; x++) {
-		for (let y = 0; y < board[0].length; y++) {
-			board[x][y] = "";
-		}
-	}
-
-	const snake = SnakeHead(2, 2);
-
-	const update = () => {
-		console.log("update board");
-		// clear board
-		for (let x = 0; x < board.length; x++) {
-			for (let y = 0; y < board[0].length; y++) {
-				board[x][y] = "";
+			if (board[x][y] == "") {
+				setBoard([...addToArray(board, [x, y], "H")]);
+				added = true;
 			}
 		}
-
-		// add snakeHead
-		let sneakH = snake.getHeadLoc();
-		board[sneakH[0]][sneakH[1]] = "H";
 	};
 
-	const change = (x, y, ele) => {
-		console.log("changes");
-		board[x][y] = ele;
-	};
-
-	const get = () => board;
-
-	return { size, get, change, update };
-};
-
-const SnakeHead = (x, y) => {
-	const getHeadLoc = () => [x, y];
-
-	return { getHeadLoc };
-};
-
-const sneakBody = (x ,y ,nexyBody) =>{
-
+	return { board, addFruit, setBoard };
 }
 
-export { Board, useBoard };
+function snake() {
+	let body = [];
+
+	const add = (locX, locY) => {
+		body.push({
+			x: locX,
+			y: locY,
+		});
+	};
+
+	return body, add;
+}
+
+export { useBoard };

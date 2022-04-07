@@ -6,7 +6,7 @@ function App({ size }) {
 	const board = useBoard(size);
 
 	useEffect(() => {
-		console.log(board.board);
+		// console.log(board.board);
 	});
 
 	let inlineStyle = {
@@ -23,6 +23,7 @@ function App({ size }) {
 					</div>
 					<div className="board" style={inlineStyle}>
 						<GameBoard board={board} change={board.change}/>
+						<button onClick={() =>board.addFruit()}></button>
 					</div>
 					<div className="result">result</div>
 					<div className="leaderBoard">board</div>
@@ -41,7 +42,6 @@ function GameBoard({ board , change}) {
 	for (let x = 0; x < oldBoard.length; x++) {
 		for (let y = 0; y < oldBoard[0].length; y++) {
 			newArray.push(oldBoard[x][y]);
-			console.log(oldBoard[x][y]);
 		}
 	}
 
