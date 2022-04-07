@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { createArray, fillArray, addToArray } from "./misc/2dArray";
+import { createArray, fillArray, addToArray, searchAndDestory } from "./misc/2dArray";
 
 function random(max) {
 	return Math.floor(Math.random() * max);
@@ -8,10 +8,9 @@ function random(max) {
 function useBoard(size) {
 	// create&fill game board
 	const [board, setBoard] = useState(createArray(size, size));
+	const snake = useSnake();
 
 	const addFruit = () => {
-		// check no fruit on board
-
 		// add new fruit at random location
 		let added = false;
 		while (!added) {
@@ -19,17 +18,32 @@ function useBoard(size) {
 			let y = random(size);
 
 			if (board[x][y] == "") {
-				setBoard([...addToArray(board, [x, y], "H")]);
+				setBoard([...addToArray(board, [x, y], "F")]);
 				added = true;
 			}
 		}
 	};
 
-	return { board, addFruit, setBoard };
+	const update = () =>{
+		let newBoard = board;
+		// remove snake
+		searchAndDestory(newBoard, "S");
+		// add snake
+		snake.snake.forEach(body =>{
+			newBoard[body[0]][body[1]] = "S";
+		})
+
+		setBoard([...newBoard]);
+	}
+
+
+
+	return { board, addFruit, setBoard ,update};
 }
 
-function snake() {
-	let body = [];
+function useSnake() {
+	let body = [[0,1],[0,2],[0,3],[0,4]];
+	const [snake, setSnake] = useState(body);
 
 	const add = (locX, locY) => {
 		body.push({
@@ -38,7 +52,7 @@ function snake() {
 		});
 	};
 
-	return body, add;
+	return {snake};
 }
 
 export { useBoard };

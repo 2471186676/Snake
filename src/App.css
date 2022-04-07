@@ -44,13 +44,14 @@
   background-color: blue;
 }
 
-.H{
+.S{
   background-color: aliceblue;
 }
 
 .F{
   background-color: rgb(255, 127, 127);
 }
+
 
 .board, .result, .leaderBoard{
   display:none;

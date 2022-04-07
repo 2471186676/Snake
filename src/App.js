@@ -24,6 +24,7 @@ function App({ size }) {
 					<div className="board" style={inlineStyle}>
 						<GameBoard board={board} change={board.change}/>
 						<button onClick={() =>board.addFruit()}></button>
+						<button onClick={() =>board.update()}></button>
 					</div>
 					<div className="result">result</div>
 					<div className="leaderBoard">board</div>
@@ -48,11 +49,10 @@ function GameBoard({ board , change}) {
 	return (
 		<>
 			{newArray.map((value, index) => {
-				if (value === "H") {
-					return <div 
-							className="H" key={index} id={index}>
-
-							</div>;
+				if (value === "S") {
+					return <div className="S" key={index} id={index}></div>;
+				}else if(value === "F"){
+					return <div className="F" key={index} id={index}></div>
 				}
 				return <div className="E" key={index} id={index} ></div>;
 			})}

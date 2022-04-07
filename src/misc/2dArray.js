@@ -15,8 +15,6 @@ function fillArray(array, elem) {
 			toRe[x][y] = elem;
 		}
 	}
-
-    
 	return toRe;
 }
 
@@ -27,4 +25,16 @@ function addToArray(array, loc, elem) {
     return toRe;
 }
 
-export { createArray, fillArray, addToArray };
+function searchAndDestory(array, elem){
+    let toRe = array;
+
+    for (let x = 0; x < toRe.length; x++) {
+		for (let y = 0; y < toRe[0].length; y++) {
+            if(toRe[x][y] === elem ){
+                toRe[x][y] = "";
+            }
+		}
+	}
+}
+
+export { createArray, fillArray, addToArray , searchAndDestory};
