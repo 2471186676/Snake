@@ -1,55 +1,76 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
-import Board from "./board"
-
-const gameBoard = Board(10);
-gameBoard.change(1,1,"hello");
-console.log(gameBoard.get());
-gameBoard.update();
-console.log(gameBoard.get());
-// console.log(gameBoard.get());
-
-let createBoard = (size) => {
-  let board = new Array(size * size);
-  for (let i = 0; i < board.length; i++) {
-    board[i] = i;
-  }
-  return board;
-};
+import { useBoard } from "./board";
 
 function App({ size }) {
-	const [board, setBoard] = useState(createBoard(size));
+	const board = useBoard(size);
 
-  let inlineStyle = {
-    gridTemplateColumns: "repeat("+size+", minmax(1px, 1fr))",
+	useEffect(() => {
+		console.log(board.board);
+	});
+
+	let inlineStyle = {
+		gridTemplateColumns: "repeat(" + size + ", minmax(1px, 1fr))",
 	};
 
 	return (
 		<>
 			<div className="header">header</div>
 			<div className="body">
-				<div className="menu">menu</div>
-				<div className="board" style={inlineStyle}>
-					<GameBoard board={board}/>
+				<div className="wrapper">
+					<div className="menu">
+						<Menu />
+					</div>
+					<div className="board" style={inlineStyle}>
+						<GameBoard board={board} change={board.change}/>
+					</div>
+					<div className="result">result</div>
+					<div className="leaderBoard">board</div>
 				</div>
-				<div className="result">result</div>
-				<div className="leaderBoard">board</div>
 			</div>
 			<div className="footer">footer</div>
 		</>
 	);
 }
 
-function GameBoard({ board }) {
+function GameBoard({ board , change}) {
+	// console.log(board.board)
+	let oldBoard = board.board;
+	let newArray = [];
+
+	for (let x = 0; x < oldBoard.length; x++) {
+		for (let y = 0; y < oldBoard[0].length; y++) {
+			newArray.push(oldBoard[x][y]);
+			console.log(oldBoard[x][y]);
+		}
+	}
 
 	return (
 		<>
-			{board.map((value, index) => {
-				return (
-					<div className="cell" key={index}>
-					</div>
-				);
+			{newArray.map((value, index) => {
+				if (value === "H") {
+					return <div 
+							className="H" key={index} id={index}>
+
+							</div>;
+				}
+				return <div className="E" key={index} id={index} ></div>;
 			})}
+		</>
+	);
+}
+
+function Menu() {
+	function click(e) {
+		e.preventDefault();
+		let board = document.getElementsByClassName("board")[0];
+		board.style.display = "grid";
+		e.target.parentElement.style.display = "none";
+	}
+
+	return (
+		<>
+			<button onClick={click}>click ME</button>
 		</>
 	);
 }

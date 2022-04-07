@@ -7,6 +7,6 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
 	<React.StrictMode>
-		<App size={40}/>
+		<App size={10}/>
 	</React.StrictMode>
 );
