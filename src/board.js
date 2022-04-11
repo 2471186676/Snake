@@ -14,37 +14,26 @@ function useBoard(size) {
 	// create&fill game board
 	const [board, setBoard] = useState(createArray(size, size));
 	const snake = useSnake(size);
-
-	const addFruit = () => {
-		// add new fruit at random location
-		let added = false;
-		while (!added) {
-			let x = random(size);
-			let y = random(size);
-
-			if (board[x][y] === "") {
-				setBoard([...addToArray(board, [x, y], "F")]);
-				added = true;
-			}
-		}
-	};
+	const fruit = useFruit();
 
 	const update = (key) => {
-		snake.move(size, key);
+		snake.move(key, fruit);
 		let newBoard = board;
 		// remove snake
-		searchAndDestory(newBoard, "S");
+		fillArray(newBoard, "");
 		// add snake
 		snake.snake.forEach((body) => {
 			newBoard[body[0]][body[1]] = "S";
 		});
-		setBoard([...newBoard]);
 
-		// console.log("update");
+		fruit.create(newBoard, snake.add);
+		let newFruit = fruit.fruit;
+		newBoard[newFruit[0]][newFruit[1]] = "F";
+
+		setBoard([...newBoard]);
 	};
 
-
-	return { board, addFruit, setBoard, update };
+	return { board, setBoard, update };
 }
 
 function useSnake(bordSize) {
@@ -63,65 +52,48 @@ function useSnake(bordSize) {
 		setSnake([...newSnake]);
 	};
 
-	const move = (size, key) => {
+	const move = (key, fruit) => {
 		let newSnake = snake;
 		let max = newSnake.length - 1;
 		key = key.toLowerCase();
 		let newHead;
+
+		const checkMove = (x, y) => {
+			if (fruit[0] == x && fruit[1] == y) {
+				//grow snake
+				body.push(fruit);
+			} else if (possibleMove(x, y, bordSize)) {
+				for (let i = 0; i < newSnake.length; i++) {
+					if (i !== newSnake.length - 1) {
+						newSnake[i] = newSnake[i + 1];
+					} else {
+						newSnake[i] = newHead;
+					}
+				}
+			}
+		};
 
 		// go right
 		switch (key) {
 			case "w":
 				newHead = [newSnake[max][0] - 1, newSnake[max][1]];
 				// check outOfBound
-				if (possibleMove(newHead[0], newHead[1], size)) {
-					for (let i = 0; i < newSnake.length; i++) {
-						if (i !== newSnake.length - 1) {
-							newSnake[i] = newSnake[i + 1];
-						} else {
-							newSnake[i] = newHead;
-						}
-					}
-				}
+				checkMove(newHead[0], newHead[1]);
 				break;
 			case "a":
 				newHead = [newSnake[max][0], newSnake[max][1] - 1];
 				// check outOfBound
-				if (possibleMove(newHead[0], newHead[1], size)) {
-					for (let i = 0; i < newSnake.length; i++) {
-						if (i !== newSnake.length - 1) {
-							newSnake[i] = newSnake[i + 1];
-						} else {
-							newSnake[i] = newHead;
-						}
-					}
-				}
+				checkMove(newHead[0], newHead[1]);
 				break;
 			case "s":
-				newHead = [newSnake[max][0]+1, newSnake[max][1]];
+				newHead = [newSnake[max][0] + 1, newSnake[max][1]];
 				// check outOfBound
-				if (possibleMove(newHead[0], newHead[1], size)) {
-					for (let i = 0; i < newSnake.length; i++) {
-						if (i !== newSnake.length - 1) {
-							newSnake[i] = newSnake[i + 1];
-						} else {
-							newSnake[i] = newHead;
-						}
-					}
-				}
+				checkMove(newHead[0], newHead[1]);
 				break;
 			case "d":
 				newHead = [newSnake[max][0], newSnake[max][1] + 1];
 				// check outOfBound
-				if (possibleMove(newHead[0], newHead[1], size)) {
-					for (let i = 0; i < newSnake.length; i++) {
-						if (i !== newSnake.length - 1) {
-							newSnake[i] = newSnake[i + 1];
-						} else {
-							newSnake[i] = newHead;
-						}
-					}
-				}
+				checkMove(newHead[0], newHead[1]);
 				break;
 			case "escape":
 				break;
@@ -131,32 +103,42 @@ function useSnake(bordSize) {
 		}
 
 		setSnake(newSnake);
-		// console.log(newSnake);
 	};
 
-	const possibleMove = (x, y, size) => {
+	const possibleMove = (x, y) => {
 		let possibleMove = false;
-	
-		if (x >= 0 && x < size && y >= 0 && y < size) {
+
+		if (x >= 0 && x < bordSize && y >= 0 && y < bordSize) {
 			possibleMove = true;
 		}
 		for (let i = 0; i < body.length; i++) {
-			// console.log(x, y,"|", body[i][0], body[i][1], possibleMove);
-
 			let impact = body[i][0] == x && body[i][1] == y;
-			if(impact){
+			if (impact) {
 				i = body.length + 2;
 				possibleMove = false;
 			}
 		}
-		console.log(possibleMove)
-		console.log("--------")
-
-
 		return possibleMove;
 	};
 
 	return { snake, add, move };
 }
 
+function useFruit() {
+	const [fruit, setFruit] = useState([1, 1]);
+
+	const create = (board, growSnake) => {
+		if (board[fruit[0]][fruit[1]] == "S") {
+			// this is so scuffed, blame how setState work
+			growSnake(fruit[0], fruit[1]);
+
+			let abc = fruit;
+			abc[0] = random(10);
+			abc[1] = random(10);
+			setFruit([...abc]);
+		}
+	};
+
+	return { fruit, create };
+}
 export { useBoard };

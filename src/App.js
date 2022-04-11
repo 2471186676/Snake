@@ -19,7 +19,7 @@ function App({ size }) {
 			if (cycle == true) {
 				board.update(keyDown);
 			}
-		}, 1000);
+		}, 100);
 
 	}, []);
 
@@ -41,9 +41,7 @@ function App({ size }) {
 					</div>
 					<div className="board" style={inlineStyle}>
 						<GameBoard board={board} change={board.change} />
-						<button onClick={() => board.update()}>update</button>
-						<button onClick={() => board.move()}>move</button>
-						{/* <button onClick={() => startStop()}>SS</button> */}
+						<button onClick={() => board.addFruit()}>add</button>
 					</div>
 					<div className="result">result</div>
 					<div className="leaderBoard">board</div>
