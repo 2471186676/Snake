@@ -6,24 +6,25 @@ import { useBoard } from "./board";
 function App({ size }) {
 	const board = useBoard(size);
 
-	// const startStop = () => {
-	// 	cycle == true ? setCycle(false) : setCycle(true);
-	// 	console.log(cycle);
-	// };
-
 	useEffect(() => {
+		let keyDown = "d";
 		let cycle = true;
+
+		// read input
+		document.addEventListener("keydown", (e) => {
+			keyDown = e.key;
+		});
 
 		setInterval(() => {
 			if (cycle == true) {
-				board.update();
+				board.update(keyDown);
 			}
-		}, 2000);
+		}, 1000);
+
 	}, []);
 
-
 	const keyPress = (e) => {
-		console.log(e.key);
+		return e.key;
 	};
 
 	let inlineStyle = {

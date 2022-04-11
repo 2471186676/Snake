@@ -29,7 +29,8 @@ function useBoard(size) {
 		}
 	};
 
-	const update = () => {
+	const update = (key) => {
+		snake.move(size, key);
 		let newBoard = board;
 		// remove snake
 		searchAndDestory(newBoard, "S");
@@ -39,23 +40,19 @@ function useBoard(size) {
 		});
 		setBoard([...newBoard]);
 
-		console.log("update");
-	};
-
-	const move = () => {
-		snake.move(size);
+		// console.log("update");
 	};
 
 
-	return { board, addFruit, setBoard, move, update, startStop };
+	return { board, addFruit, setBoard, update };
 }
 
 function useSnake(bordSize) {
 	let body = [
-		[0, 1],
-		[0, 2],
-		[0, 3],
-		[0, 4],
+		[3, 1],
+		[3, 2],
+		[3, 3],
+		[3, 4],
 	];
 	const [snake, setSnake] = useState(body);
 
@@ -66,24 +63,97 @@ function useSnake(bordSize) {
 		setSnake([...newSnake]);
 	};
 
-	const move = (size) => {
+	const move = (size, key) => {
 		let newSnake = snake;
 		let max = newSnake.length - 1;
-		let newHead = [newSnake[max][0], newSnake[max][1] + 1];
+		key = key.toLowerCase();
+		let newHead;
 
-		// check outOfBound
-		if (newHead[1] < 10) {
-			for (let i = 0; i < newSnake.length; i++) {
-				if (i !== newSnake.length - 1) {
-					newSnake[i] = newSnake[i + 1];
-				} else {
-					newSnake[i] = newHead;
+		// go right
+		switch (key) {
+			case "w":
+				newHead = [newSnake[max][0] - 1, newSnake[max][1]];
+				// check outOfBound
+				if (possibleMove(newHead[0], newHead[1], size)) {
+					for (let i = 0; i < newSnake.length; i++) {
+						if (i !== newSnake.length - 1) {
+							newSnake[i] = newSnake[i + 1];
+						} else {
+							newSnake[i] = newHead;
+						}
+					}
 				}
-			}
+				break;
+			case "a":
+				newHead = [newSnake[max][0], newSnake[max][1] - 1];
+				// check outOfBound
+				if (possibleMove(newHead[0], newHead[1], size)) {
+					for (let i = 0; i < newSnake.length; i++) {
+						if (i !== newSnake.length - 1) {
+							newSnake[i] = newSnake[i + 1];
+						} else {
+							newSnake[i] = newHead;
+						}
+					}
+				}
+				break;
+			case "s":
+				newHead = [newSnake[max][0]+1, newSnake[max][1]];
+				// check outOfBound
+				if (possibleMove(newHead[0], newHead[1], size)) {
+					for (let i = 0; i < newSnake.length; i++) {
+						if (i !== newSnake.length - 1) {
+							newSnake[i] = newSnake[i + 1];
+						} else {
+							newSnake[i] = newHead;
+						}
+					}
+				}
+				break;
+			case "d":
+				newHead = [newSnake[max][0], newSnake[max][1] + 1];
+				// check outOfBound
+				if (possibleMove(newHead[0], newHead[1], size)) {
+					for (let i = 0; i < newSnake.length; i++) {
+						if (i !== newSnake.length - 1) {
+							newSnake[i] = newSnake[i + 1];
+						} else {
+							newSnake[i] = newHead;
+						}
+					}
+				}
+				break;
+			case "escape":
+				break;
+			case undefined:
+				break;
+			default:
 		}
 
 		setSnake(newSnake);
-		console.log(newSnake);
+		// console.log(newSnake);
+	};
+
+	const possibleMove = (x, y, size) => {
+		let possibleMove = false;
+	
+		if (x >= 0 && x < size && y >= 0 && y < size) {
+			possibleMove = true;
+		}
+		for (let i = 0; i < body.length; i++) {
+			// console.log(x, y,"|", body[i][0], body[i][1], possibleMove);
+
+			let impact = body[i][0] == x && body[i][1] == y;
+			if(impact){
+				i = body.length + 2;
+				possibleMove = false;
+			}
+		}
+		console.log(possibleMove)
+		console.log("--------")
+
+
+		return possibleMove;
 	};
 
 	return { snake, add, move };
