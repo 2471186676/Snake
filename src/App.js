@@ -1,3 +1,4 @@
+import { keyboard } from "@testing-library/user-event/dist/keyboard";
 import { useEffect, useState } from "react";
 import "./App.css";
 import { useBoard } from "./board";
@@ -5,9 +6,25 @@ import { useBoard } from "./board";
 function App({ size }) {
 	const board = useBoard(size);
 
+	// const startStop = () => {
+	// 	cycle == true ? setCycle(false) : setCycle(true);
+	// 	console.log(cycle);
+	// };
+
 	useEffect(() => {
-		// console.log(board.board);
-	});
+		let cycle = true;
+
+		setInterval(() => {
+			if (cycle == true) {
+				board.update();
+			}
+		}, 2000);
+	}, []);
+
+
+	const keyPress = (e) => {
+		console.log(e.key);
+	};
 
 	let inlineStyle = {
 		gridTemplateColumns: "repeat(" + size + ", minmax(1px, 1fr))",
@@ -16,15 +33,16 @@ function App({ size }) {
 	return (
 		<>
 			<div className="header">header</div>
-			<div className="body">
+			<div className="body" onKeyDown={keyPress}>
 				<div className="wrapper">
 					<div className="menu">
 						<Menu />
 					</div>
 					<div className="board" style={inlineStyle}>
-						<GameBoard board={board} change={board.change}/>
-						<button onClick={() =>board.addFruit()}></button>
-						<button onClick={() =>board.update()}></button>
+						<GameBoard board={board} change={board.change} />
+						<button onClick={() => board.update()}>update</button>
+						<button onClick={() => board.move()}>move</button>
+						{/* <button onClick={() => startStop()}>SS</button> */}
 					</div>
 					<div className="result">result</div>
 					<div className="leaderBoard">board</div>
@@ -35,7 +53,7 @@ function App({ size }) {
 	);
 }
 
-function GameBoard({ board , change}) {
+function GameBoard({ board, change }) {
 	// console.log(board.board)
 	let oldBoard = board.board;
 	let newArray = [];
@@ -51,10 +69,10 @@ function GameBoard({ board , change}) {
 			{newArray.map((value, index) => {
 				if (value === "S") {
 					return <div className="S" key={index} id={index}></div>;
-				}else if(value === "F"){
-					return <div className="F" key={index} id={index}></div>
+				} else if (value === "F") {
+					return <div className="F" key={index} id={index}></div>;
 				}
-				return <div className="E" key={index} id={index} ></div>;
+				return <div className="E" key={index} id={index}></div>;
 			})}
 		</>
 	);

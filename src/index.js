@@ -5,8 +5,5 @@ import App from "./App";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
-root.render(
-	<React.StrictMode>
-		<App size={10}/>
-	</React.StrictMode>
-);
+root.render(<App size={10} />);
+
