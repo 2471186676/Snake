@@ -4,7 +4,7 @@ import { useBoard } from "./board";
 
 function App({ size }) {
 	const board = useBoard(size);
-
+	const uiClassName = ["manu", "board", "pause", "result", "leader"];
 
 	let inlineStyle = {
 		gridTemplateColumns: "repeat(" + size + ", minmax(1px, 1fr))",
@@ -21,9 +21,9 @@ function App({ size }) {
 					<div className="board" style={inlineStyle}>
 						<GameBoard board={board} change={board.change} />
 					</div>
+					<div className="pause"></div>
 					<div className="result">result</div>
-					<div className="deathScreen"></div>
-					<div className="leaderBoard">board</div>
+					<div className="leader">board</div>
 				</div>
 			</div>
 			<div className="footer">footer</div>
@@ -52,6 +52,8 @@ function GameBoard({ board, change }) {
 				}
 				return <div className="E" key={index} id={index}></div>;
 			})}
+			{/* <button onClick={board.reset}>reset</button> */}
+			<button onClick={board.startStop}>pause</button>
 		</>
 	);
 }

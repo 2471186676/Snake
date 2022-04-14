@@ -1,6 +1,7 @@
 :root{
     --ui-color: rgb(245, 211, 118);
     --contrast-color: rgb(76, 66, 208);
+    --animation-duration: 1.5s;
 }
 
 body{
