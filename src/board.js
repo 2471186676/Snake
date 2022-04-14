@@ -11,28 +11,31 @@ function useBoard(size) {
 	const [board, setBoard] = useState(createArray(size, size));
 	const snake = useSnake(size);
 	const fruit = useFruit();
-	const [loop, setLoop]  = useState(false);
+	const [loop, setLoop] = useState(false);
+	const [key, setKey] = useState("");
+	const acceptedKey = ["w", "a", "s", "d", "escape"];
 
-	
-	
 	useEffect(() => {
-		let keyDown = "stop";
-		let cycle = true;
+		const listenerFunction = (e) => {
+			let input = e.key.toLocaleLowerCase();
+			let accept = acceptedKey.find((i) => i == input);
+
+			accept != undefined ? accept = accept: accept = key;
+			loop === true ? setKey(accept) : setKey("");
+		};
 
 		// read input
-		document.addEventListener("keydown", (e) => {
-			loop === true? keyDown = e.key: keyDown = "";
-		});
+		document.addEventListener("keydown", listenerFunction);
 
 		let gameLoop = setInterval(() => {
-			if (cycle == true) {
-				update(keyDown);
-			}
+			update(key);
 		}, 100);
 
-		return() => clearInterval(gameLoop);
-
-	}, [loop]);
+		return () => {
+			clearInterval(gameLoop);
+			document.removeEventListener("keydown", listenerFunction);
+		};
+	}, [loop, key]);
 
 	const update = (key) => {
 		snake.move(key, fruit);
@@ -51,12 +54,11 @@ function useBoard(size) {
 		setBoard([...newBoard]);
 	};
 
-	const startStop = () =>{
-		loop === true? setLoop(false): setLoop(true);
-	}
+	const startStop = () => {
+		loop === true ? setLoop(false) : setLoop(true);
+	};
 
-
-	return { board, setBoard, update , startStop};
+	return { board, setBoard, update, startStop };
 }
 
 function useSnake(bordSize) {
@@ -79,6 +81,7 @@ function useSnake(bordSize) {
 		let newSnake = snake;
 		let max = newSnake.length - 1;
 		key = key.toLowerCase();
+
 		let newHead;
 
 		const checkMove = (x, y) => {
