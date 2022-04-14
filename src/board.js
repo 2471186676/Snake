@@ -6,15 +6,33 @@ import {
 	searchAndDestory,
 } from "./misc/2dArray";
 
-function random(max) {
-	return Math.floor(Math.random() * max);
-}
-
 function useBoard(size) {
 	// create&fill game board
 	const [board, setBoard] = useState(createArray(size, size));
 	const snake = useSnake(size);
 	const fruit = useFruit();
+	const [loop, setLoop]  = useState(false);
+
+	
+	
+	useEffect(() => {
+		let keyDown = "stop";
+		let cycle = true;
+
+		// read input
+		document.addEventListener("keydown", (e) => {
+			loop === true? keyDown = e.key: keyDown = "";
+		});
+
+		let gameLoop = setInterval(() => {
+			if (cycle == true) {
+				update(keyDown);
+			}
+		}, 100);
+
+		return() => clearInterval(gameLoop);
+
+	}, [loop]);
 
 	const update = (key) => {
 		snake.move(key, fruit);
@@ -33,7 +51,12 @@ function useBoard(size) {
 		setBoard([...newBoard]);
 	};
 
-	return { board, setBoard, update };
+	const startStop = () =>{
+		loop === true? setLoop(false): setLoop(true);
+	}
+
+
+	return { board, setBoard, update , startStop};
 }
 
 function useSnake(bordSize) {
@@ -73,26 +96,21 @@ function useSnake(bordSize) {
 			}
 		};
 
-		// go right
 		switch (key) {
 			case "w":
 				newHead = [newSnake[max][0] - 1, newSnake[max][1]];
-				// check outOfBound
 				checkMove(newHead[0], newHead[1]);
 				break;
 			case "a":
 				newHead = [newSnake[max][0], newSnake[max][1] - 1];
-				// check outOfBound
 				checkMove(newHead[0], newHead[1]);
 				break;
 			case "s":
 				newHead = [newSnake[max][0] + 1, newSnake[max][1]];
-				// check outOfBound
 				checkMove(newHead[0], newHead[1]);
 				break;
 			case "d":
 				newHead = [newSnake[max][0], newSnake[max][1] + 1];
-				// check outOfBound
 				checkMove(newHead[0], newHead[1]);
 				break;
 			case "escape":
@@ -111,13 +129,14 @@ function useSnake(bordSize) {
 		if (x >= 0 && x < bordSize && y >= 0 && y < bordSize) {
 			possibleMove = true;
 		}
-		for (let i = 0; i < body.length; i++) {
-			let impact = body[i][0] == x && body[i][1] == y;
+		for (let i = 0; i < snake.length; i++) {
+			let impact = snake[i][0] === x && snake[i][1] === y;
 			if (impact) {
-				i = body.length + 2;
+				i = snake.length + 2;
 				possibleMove = false;
 			}
 		}
+
 		return possibleMove;
 	};
 
@@ -141,4 +160,9 @@ function useFruit() {
 
 	return { fruit, create };
 }
+
+function random(max) {
+	return Math.floor(Math.random() * max);
+}
+
 export { useBoard };

@@ -1,4 +1,3 @@
-import { keyboard } from "@testing-library/user-event/dist/keyboard";
 import { useEffect, useState } from "react";
 import "./App.css";
 import { useBoard } from "./board";
@@ -6,26 +5,6 @@ import { useBoard } from "./board";
 function App({ size }) {
 	const board = useBoard(size);
 
-	useEffect(() => {
-		let keyDown = "d";
-		let cycle = true;
-
-		// read input
-		document.addEventListener("keydown", (e) => {
-			keyDown = e.key;
-		});
-
-		setInterval(() => {
-			if (cycle == true) {
-				board.update(keyDown);
-			}
-		}, 100);
-
-	}, []);
-
-	const keyPress = (e) => {
-		return e.key;
-	};
 
 	let inlineStyle = {
 		gridTemplateColumns: "repeat(" + size + ", minmax(1px, 1fr))",
@@ -34,16 +13,16 @@ function App({ size }) {
 	return (
 		<>
 			<div className="header">header</div>
-			<div className="body" onKeyDown={keyPress}>
+			<div className="body">
 				<div className="wrapper">
 					<div className="menu">
-						<Menu />
+						<Menu additonal={board.startStop}/>
 					</div>
 					<div className="board" style={inlineStyle}>
 						<GameBoard board={board} change={board.change} />
-						<button onClick={() => board.addFruit()}>add</button>
 					</div>
 					<div className="result">result</div>
+					<div className="deathScreen"></div>
 					<div className="leaderBoard">board</div>
 				</div>
 			</div>
@@ -54,7 +33,7 @@ function App({ size }) {
 
 function GameBoard({ board, change }) {
 	// console.log(board.board)
-	let oldBoard = board.board;
+	let oldBoard = board.board === undefined? [[1,2,3]]: board.board;
 	let newArray = [];
 
 	for (let x = 0; x < oldBoard.length; x++) {
@@ -77,12 +56,13 @@ function GameBoard({ board, change }) {
 	);
 }
 
-function Menu() {
+function Menu({additonal}) {
 	function click(e) {
 		e.preventDefault();
 		let board = document.getElementsByClassName("board")[0];
 		board.style.display = "grid";
 		e.target.parentElement.style.display = "none";
+		additonal();
 	}
 
 	return (
