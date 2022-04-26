@@ -1,14 +1,32 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import { useBoard } from "./board";
 
+const changeDisplay = (element, style) => {
+	let type = typeof element;
+	if (type == "string") {
+		let div = document.getElementsByClassName(element)[0];
+		div.style.display = style;
+	} else if (type == "object") {
+		element.style.display = style;
+	}
+};
+
 function App({ size }) {
 	const board = useBoard(size);
-	const uiClassName = ["manu", "board", "pause", "result", "leader"];
 
 	let inlineStyle = {
 		gridTemplateColumns: "repeat(" + size + ", minmax(1px, 1fr))",
 	};
+
+	function pauseGame() {
+		board.startStop();
+		let pauseUI = document.getElementsByClassName("pause")[0];
+		let display = pauseUI.style.display;
+		display === "" || display === "none"
+			? changeDisplay(pauseUI, "flex")
+			: changeDisplay(pauseUI, "none");
+	}
 
 	return (
 		<>
@@ -16,12 +34,14 @@ function App({ size }) {
 			<div className="body">
 				<div className="wrapper">
 					<div className="menu">
-						<Menu additonal={board.startStop}/>
+						<Menu additonal={board.startStop} />
 					</div>
 					<div className="board" style={inlineStyle}>
-						<GameBoard board={board} change={board.change} />
+						<GameBoard board={board} pause={pauseGame} />
 					</div>
-					<div className="pause"></div>
+					<div className="pause">
+						<button onClick={pauseGame}>unpause</button>
+					</div>
 					<div className="result">result</div>
 					<div className="leader">board</div>
 				</div>
@@ -31,9 +51,8 @@ function App({ size }) {
 	);
 }
 
-function GameBoard({ board, change }) {
-	// console.log(board.board)
-	let oldBoard = board.board === undefined? [[1,2,3]]: board.board;
+function GameBoard({ board, pause }) {
+	let oldBoard = board.board === undefined ? [[1, 2, 3]] : board.board;
 	let newArray = [];
 
 	for (let x = 0; x < oldBoard.length; x++) {
@@ -52,19 +71,21 @@ function GameBoard({ board, change }) {
 				}
 				return <div className="E" key={index} id={index}></div>;
 			})}
-			{/* <button onClick={board.reset}>reset</button> */}
-			<button onClick={board.startStop}>pause</button>
+			<button onClick={pause}>score</button>
 		</>
 	);
 }
 
-function Menu({additonal}) {
+function Menu({ additonal }) {
 	function click(e) {
 		e.preventDefault();
-		let board = document.getElementsByClassName("board")[0];
-		board.style.display = "grid";
-		e.target.parentElement.style.display = "none";
+		changeDisplay("board", "grid");
+		changeDisplay(e.target.parentElement, "none");
+
+		// run passed in function
 		additonal();
+
+		additonal !== undefined ? additonal() : console();
 	}
 
 	return (

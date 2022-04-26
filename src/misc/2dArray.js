@@ -37,4 +37,17 @@ function searchAndDestory(array, elem){
 	}
 }
 
-export { createArray, fillArray, addToArray , searchAndDestory};
+function searchAndReturnInt(array, elem){
+	let amount = 0;
+	for(let x = 0; x < array.length; x++){
+		for(let y = 0; y < array[x].length; y++){
+			if(array[x][y] === elem){
+				amount++;
+			}
+		}
+	}
+
+	return amount;
+}
+
+export { createArray, fillArray, addToArray , searchAndDestory, searchAndReturnInt};

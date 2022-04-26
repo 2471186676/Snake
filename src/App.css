@@ -11,10 +11,11 @@
 
 .menu,
 .board,
+.pause,
+.leader,
 .result,
-.leaderBoard,
 .wrapper,
-.deathScreen {
+.death {
 	height: 50vh;
 	width: 50vh;
 	display: flex;
@@ -56,19 +57,26 @@
 	background-color: rgb(255, 127, 127);
 }
 
-.deathScreen {
+.pause {
 	position: absolute;
+	
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
 	background: rgb(0, 0, 0);
 	background: linear-gradient(
     180deg,
-		rgb(59, 59, 59) 16%,
-		rgba(155, 155, 155, 0.116) 100%
+		rgb(83, 83, 83) 16%,
+		rgba(83, 83, 83, 0.116) 100%
 	);
 }
 
+
+
 .board,
 .result,
-.leaderBoard,
-.deathScreen {
+.leader,
+.pause {
 	display: none;
 }
