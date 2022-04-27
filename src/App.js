@@ -21,10 +21,10 @@ function pauseScreen(score = 0) {
 	display === "" || display === "none"
 		? changeDisplay(pauseUI, "flex")
 		: changeDisplay(pauseUI, "none");
-	scorePoint.innerHTML = score;
+	scorePoint.innerHTML = "Fruit eaten: "+score;
 }
 
-function addClassList(element, className){
+function addClassList(element, className) {
 	let type = typeof element;
 	if (type == "string") {
 		let div = document.getElementsByClassName(element)[0];
@@ -48,7 +48,9 @@ function App({ size }) {
 
 	return (
 		<>
-			<div className="header"><a href="">Snake</a></div>
+			<div className="header">
+				<a href="">Snake</a>
+			</div>
 			<div className="body">
 				<Filler />
 				<div className="wrapper">
@@ -67,7 +69,10 @@ function App({ size }) {
 				</div>
 				<Filler />
 			</div>
-			<div className="footer"></div>
+			<div className="footer">
+				Control: use W A S D to move, escape to pause.
+				<br /> Goal is to control the snake to eat the fruit
+			</div>
 		</>
 	);
 }
@@ -80,7 +85,6 @@ function Menu({ additonal }) {
 
 		// run passed in function
 		additonal();
-		additonal !== undefined ? additonal() : console();
 	}
 
 	return (
@@ -113,7 +117,6 @@ function GameBoard({ board, pause }) {
 		</>
 	);
 }
-
 
 function Filler() {
 	return (
