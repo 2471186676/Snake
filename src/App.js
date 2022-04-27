@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import "./cssAnimation.css";
 import { useBoard } from "./board";
 
 const changeDisplay = (element, style) => {
@@ -12,6 +13,27 @@ const changeDisplay = (element, style) => {
 	}
 };
 
+function pauseScreen(score = 0) {
+	let pauseUI = document.getElementsByClassName("pause")[0];
+	let scorePoint = document.getElementsByClassName("score")[0];
+
+	let display = pauseUI.style.display;
+	display === "" || display === "none"
+		? changeDisplay(pauseUI, "flex")
+		: changeDisplay(pauseUI, "none");
+	scorePoint.innerHTML = score;
+}
+
+function addClassList(element, className){
+	let type = typeof element;
+	if (type == "string") {
+		let div = document.getElementsByClassName(element)[0];
+		div.classList.add(className);
+	} else if (type == "object") {
+		element.classList.add(className);
+	}
+}
+
 function App({ size }) {
 	const board = useBoard(size);
 
@@ -21,17 +43,14 @@ function App({ size }) {
 
 	function pauseGame() {
 		board.startStop();
-		let pauseUI = document.getElementsByClassName("pause")[0];
-		let display = pauseUI.style.display;
-		display === "" || display === "none"
-			? changeDisplay(pauseUI, "flex")
-			: changeDisplay(pauseUI, "none");
+		pauseScreen();
 	}
 
 	return (
 		<>
-			<div className="header">header</div>
+			<div className="header"><a href="">Snake</a></div>
 			<div className="body">
+				<Filler />
 				<div className="wrapper">
 					<div className="menu">
 						<Menu additonal={board.startStop} />
@@ -40,13 +59,33 @@ function App({ size }) {
 						<GameBoard board={board} pause={pauseGame} />
 					</div>
 					<div className="pause">
-						<button onClick={pauseGame}>unpause</button>
+						<p className="score">score here</p>
+						<button onClick={pauseGame}>continue</button>
 					</div>
-					<div className="result">result</div>
+					<div className="result"></div>
 					<div className="leader">board</div>
 				</div>
+				<Filler />
 			</div>
-			<div className="footer">footer</div>
+			<div className="footer"></div>
+		</>
+	);
+}
+
+function Menu({ additonal }) {
+	function click(e) {
+		e.preventDefault();
+		changeDisplay("board", "grid");
+		changeDisplay(e.target.parentElement, "none");
+
+		// run passed in function
+		additonal();
+		additonal !== undefined ? additonal() : console();
+	}
+
+	return (
+		<>
+			<button onClick={click}>Press Me To Start Game!</button>
 		</>
 	);
 }
@@ -71,28 +110,20 @@ function GameBoard({ board, pause }) {
 				}
 				return <div className="E" key={index} id={index}></div>;
 			})}
-			<button onClick={pause}>score</button>
 		</>
 	);
 }
 
-function Menu({ additonal }) {
-	function click(e) {
-		e.preventDefault();
-		changeDisplay("board", "grid");
-		changeDisplay(e.target.parentElement, "none");
 
-		// run passed in function
-		additonal();
-
-		additonal !== undefined ? additonal() : console();
-	}
-
+function Filler() {
 	return (
 		<>
-			<button onClick={click}>click ME</button>
+			<div className="space"></div>
+			<div className="space"></div>
+			<div className="space"></div>
+			<div className="space"></div>
 		</>
 	);
 }
 
-export default App;
+export { App, pauseScreen };

@@ -1,15 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createArray, fillArray, searchAndReturnInt } from "./misc/2dArray";
-
-const changeDisplay = (element, style) => {
-	let type = typeof element;
-	if (type == "string") {
-		let div = document.getElementsByClassName(element)[0];
-		div.style.display = style;
-	} else if (type == "object") {
-		element.style.display = style;
-	}
-};
+import { pauseScreen } from "./App";
 
 function useBoard(size) {
 	// create&fill game board
@@ -19,30 +10,35 @@ function useBoard(size) {
 	const [loop, setLoop] = useState(false);
 	const [key, setKey] = useState("");
 	const acceptedKey = ["w", "a", "s", "d", "escape"];
+	const [read, setRead] = useState(false);
 
 	useEffect(() => {
 		const listenerFunction = (e) => {
-			let input = e.key.toLocaleLowerCase();
-			let accept = acceptedKey.find((i) => i == input);
+			if (!read) {
+				setRead(true)
+				let input = e.key.toLowerCase();
+				let accept = acceptedKey.find((i) => i == input);
 
-			// pause or unpause
-			if (accept == "escape") {
-				startStop();
-				accept = key;
+				// pause or unpause
+				if (accept == "escape") {
+					startStop();
+					pauseScreen();
+				}
+				// if unknow input, use last known key
+				if (accept == undefined) {
+					accept = key;
+				}
+				setKey(accept);
 			}
-			// if unknow input, use last known key
-			if (accept == undefined) {
-				accept = key;
-			}
-			setKey(accept);
 		};
 
-		let gameLoop;
-
 		document.addEventListener("keydown", listenerFunction);
+
+		let gameLoop;
 		if (loop) {
 			gameLoop = setInterval(() => {
 				update(key);
+				setRead(false);
 			}, 100);
 		}
 
@@ -50,10 +46,10 @@ function useBoard(size) {
 			clearInterval(gameLoop);
 			document.removeEventListener("keydown", listenerFunction);
 		};
-	}, [loop, key]);
+	}, [loop, key, read]);
 
-	const update = (key) => {
-		if (snake.move(key)) {
+	const update = (keys) => {
+		if (snake.move(keys)) {
 			let newBoard = board;
 			// remove snake
 			fillArray(newBoard, "");
@@ -67,19 +63,17 @@ function useBoard(size) {
 				newBoard[newFruit[0]][newFruit[1]] = "F";
 			} else {
 				setLoop(false);
+				pauseScreen(fruit.score);
+				reset();
 			}
 
 			setBoard([...newBoard]);
 		} else {
 			// gameOver
-			console.log(fruit.score);
 			setLoop(false);
 			// appear pause screen
-			let pauseUI = document.getElementsByClassName("pause")[0];
-			let display = pauseUI.style.display;
-			display === "" || display === "none"
-				? changeDisplay(pauseUI, "flex")
-				: changeDisplay(pauseUI, "none");
+			pauseScreen(fruit.score);
+			reset();
 		}
 	};
 
@@ -106,9 +100,7 @@ function useSnake(bordSize) {
 		[3, 4],
 	];
 	const [snake, setSnake] = useState(body);
-	const [lastAction, setLastAction] = useState("d");
-	// a & d
-	// w & s
+	const [lastAction, setLastAction] = useState("");
 
 	const add = (x, y) => {
 		// new snake part is added at where
@@ -124,6 +116,7 @@ function useSnake(bordSize) {
 		key = key.toLowerCase();
 		let newHead;
 
+		// console.log(key, lastAction)
 		// prevent going backward, do last action instead
 		if (
 			(key == "a" && lastAction == "d") ||
@@ -131,6 +124,7 @@ function useSnake(bordSize) {
 			(key == "w" && lastAction == "s") ||
 			(key == "s" && lastAction == "w")
 		) {
+			console.log("-----", key, lastAction);
 			key = lastAction;
 		}
 
@@ -202,7 +196,7 @@ function useSnake(bordSize) {
 function useFruit() {
 	const defaultLoc = [1, 1];
 	const [fruit, setFruit] = useState(defaultLoc);
-	const [score, setScore] = useState(1);
+	const [score, setScore] = useState(0);
 
 	const create = (board, growSnake) => {
 		let canCreateFruit = true;
@@ -213,14 +207,21 @@ function useFruit() {
 			growSnake(fruit[0], fruit[1]);
 
 			// check if board is full
-			// console.log(searchAndReturnInt(board, "S"));
 			let boardSize = board.length * board.length;
 
+			let placed = false;
 			if (score + 1 < boardSize) {
-				let newFruit = fruit;
-				newFruit[0] = random(10);
-				newFruit[1] = random(10);
-				setFruit([...newFruit]);
+				while (!placed) {
+					let newFruit = fruit;
+					let x = random(board.length);
+					let y = random(board.length);
+					if (board[x][y] != "S") {
+						newFruit[0] = x;
+						newFruit[1] = y;
+						setFruit([...newFruit]);
+						placed = true;
+					}
+				}
 			} else {
 				canCreateFruit = false;
 			}
